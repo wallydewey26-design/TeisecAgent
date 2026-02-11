@@ -65,7 +65,8 @@ class FetchURLPlugin(TeisecAgentPlugin):
         """  
         try:    
             headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36'}
-            response = requests.get(url, headers=headers)  
+            # Add timeout to prevent hanging on slow connections
+            response = requests.get(url, headers=headers, timeout=30)  
 
             if response.status_code == 200:  
                 cleaned_text = self.clean_html(response.content)  
@@ -77,7 +78,11 @@ class FetchURLPlugin(TeisecAgentPlugin):
         except InvalidSchema as e: 
             return f"Failed to retrieve content. URL couldn't be extracted from the prompt."  
         except ChunkedEncodingError as e:  
-            return f"Failed to retrieve content. URL couldn't be extracted from the prompt."  
+            return f"Failed to retrieve content. URL couldn't be extracted from the prompt."
+        except requests.exceptions.Timeout as e:
+            return f"Failed to retrieve content. Request timed out after 30 seconds."
+        except requests.exceptions.RequestException as e:
+            return f"Failed to retrieve content. Request error: {str(e)}"  
     def fetchAndClean(self, prompt, session,scope='FetchURLPlugin'):  
         """  
         Extract the URL from the prompt and process it.  

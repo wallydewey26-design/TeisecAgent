@@ -379,13 +379,22 @@ class TeisecAgent:
         if addToMessages:
             user_object = {"role": "user", "content": [{"type": "text", "text": task['response_object']['prompt']}]}  
             assistant_object = {"role": "assistant", "content": [{"type": "text", "text": str(task['response_object']['result'])}]}  
-            if len(self.sessions[sessionId]["messages"]) >= self.context_window_size * 2:  
-                self.sessions[sessionId]["messages"].pop(1)  # Remove the oldest element twice (Assistant and User) . First Item is the System Message 
-                self.sessions[sessionId]["messages"].pop(1)  
+            # Maintain a sliding window of messages (system message + context_window_size pairs)
+            # Each pair is a user message and an assistant message
+            # Before adding new messages, check if we need to remove old ones
+            max_messages = (self.context_window_size * 2) + 1  # +1 for system message
+            if len(self.sessions[sessionId]["messages"]) > max_messages - 2:  # -2 because we're about to add 2 messages
+                self.sessions[sessionId]["messages"].pop(1)  # Remove the oldest user message
+                self.sessions[sessionId]["messages"].pop(1)  # Remove the oldest assistant message
             self.sessions[sessionId]["messages"].append(user_object)  
             self.sessions[sessionId]["messages"].append(assistant_object)  
             self.update_session_usage(sessionId,task['response_object']['session_tokens'], scope='Plugin-Internal')  
             self.update_session_usage(sessionId,task['processed_response']['session_tokens'], scope='Core-OutPutProcessing')
+        
+        # Prevent unbounded growth of tasks array - keep only recent tasks
+        max_tasks = 50  # Keep last 50 tasks
+        if len(self.sessions[sessionId]["tasks"]) > max_tasks:
+            self.sessions[sessionId]["tasks"] = self.sessions[sessionId]["tasks"][-max_tasks:]
     def update_tokens_scope(self,session_tokens, scope):
         uptaded_session_tokens = session_tokens
         if scope != '':
