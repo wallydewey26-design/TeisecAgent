@@ -1,7 +1,8 @@
 from app.plugins.TeisecAgentPlugin import TeisecAgentPlugin  
 from colorama import Fore  
 import json  
-import os  
+import os
+import time  
 from app.HelperFunctions import print_plugin_debug  
   
 class SentinelKQLPlugin(TeisecAgentPlugin):  
@@ -136,11 +137,34 @@ class SentinelKQLPlugin(TeisecAgentPlugin):
         return current_consolidated_schema
     def loadSentinelSchema(self):  
         """  
-        Load the Sentinel schema from a JSON file, generating it if it doesn't exist.  
+        Load the Sentinel schema from a JSON file, generating it if it doesn't exist or is outdated.  
   
         :return: Loaded Sentinel schema  
         """  
-        print_plugin_debug(self.name, "Updating and Loading Sentinel Schema for current Workspace")  
+        print_plugin_debug(self.name, "Loading Sentinel Schema for current Workspace")
+        current_workspace_name=self.sentinelClient.workspaceName
+        schema_cache_file = current_workspace_name+'.json'
+        
+        # Check if cached schema exists and is recent (less than 7 days old)
+        try:
+            if os.path.exists(schema_cache_file):
+                file_modified_time = os.path.getmtime(schema_cache_file)
+                days_old = (time.time() - file_modified_time) / (60 * 60 * 24)
+                
+                if days_old < 7:  # Use cached schema if less than 7 days old
+                    print_plugin_debug(self.name, f"Using cached schema (last updated {days_old:.1f} days ago)")
+                    with open(schema_cache_file, 'r', encoding='utf-8') as f:
+                        workspace_schema = json.load(f)
+                    # Still need to merge with default schema
+                    with open(self.default_schema_file, 'r', encoding='utf-8') as f:
+                        default_schema = json.load(f)
+                    return default_schema | workspace_schema
+                else:
+                    print_plugin_debug(self.name, f"Cached schema is {days_old:.1f} days old, regenerating")
+        except Exception as err:
+            print_plugin_debug(self.name, f"Error loading cached schema: {err}")
+        
+        # Generate fresh schema if cache doesn't exist or is too old
         return self.generateSentinelSchema()
 
     def runKQLQuery(self, query, session):  

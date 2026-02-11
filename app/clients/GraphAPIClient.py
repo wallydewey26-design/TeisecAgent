@@ -19,12 +19,15 @@ class GraphAPIClient:
     def __init__(self,credential):
 
         self.access_token_timestamp=0
+        self.access_token=None
         self.credential=credential
 
     def _get_access_token (self):
         now_ts=datetime.now().timestamp()
-        self.access_token=self.credential.get_token(self.scope).token
-        self.access_token_timestamp=now_ts
+        # Cache token for 55 minutes (tokens typically expire after 60 minutes)
+        if self.access_token is None or (now_ts - self.access_token_timestamp) > 3300:
+            self.access_token=self.credential.get_token(self.scope).token
+            self.access_token_timestamp=now_ts
         return self.access_token
         
     def get_email (self,mailbox,internetmessageid):

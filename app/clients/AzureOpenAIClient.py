@@ -1,4 +1,5 @@
 import json
+import os
 from openai import AzureOpenAI,BadRequestError,APIConnectionError
 from colorama import Fore
 from app.Prompts import TeisecPrompts
