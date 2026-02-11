@@ -10,6 +10,8 @@ class AzureOpenAIClient():
         api_key=api_key,  
         api_version="2024-05-01-preview"
         )
+        # Create log directory if it doesn't exist
+        os.makedirs('log', exist_ok=True)
     
     def runPrompt(self,prompt,session={},scope='core'):
         if ("messages" in session and len(session["messages"])>0 and session["messages"][0]['role']=='system'):
@@ -24,14 +26,19 @@ class AzureOpenAIClient():
         result=''
         status='success'
         session_tokens=''
-        #print(prompt)
-        with open('log/'+scope+'.log', 'a', encoding='utf-8') as f:  
-            f.write("\nSESSION:\n")
-            f.write(json.dumps(message_object, ensure_ascii=False, indent=4))
-            f.write('\nPROMPT:\n')
-            f.write(prompt)
-            f.close()
-            #json.dump(table_schemas, f, ensure_ascii=False, indent=4)
+        
+        # Only log in debug mode to reduce I/O
+        debug_mode = os.getenv('DEBUG_MODE', 'False') == 'True'
+        if debug_mode:
+            try:
+                with open('log/'+scope+'.log', 'a', encoding='utf-8') as f:  
+                    f.write("\nSESSION:\n")
+                    f.write(json.dumps(message_object, ensure_ascii=False, indent=4))
+                    f.write('\nPROMPT:\n')
+                    f.write(prompt)
+            except Exception:
+                pass  # Silently ignore logging errors
+        
         try:
             completion = self.client.chat.completions.create(
             model=self.model_name,#Deployment Name
@@ -59,9 +66,14 @@ class AzureOpenAIClient():
         tokes_object={"prompt_tokens":usage.prompt_tokens,"completion_tokens":usage.completion_tokens,"total_tokens":usage.total_tokens}        
         session_tokens_object.append({"scope":scope,"tokens":tokes_object})
         result_object={"status":status,"result":result,"session_tokens":session_tokens_object}
-        #print(result)
-        with open('log/'+scope+'.log', 'a', encoding='utf-8') as f:  
-            f.write("\nRESULT\n")
-            f.write(result)
-            f.close()
+        
+        # Only log in debug mode to reduce I/O
+        if debug_mode:
+            try:
+                with open('log/'+scope+'.log', 'a', encoding='utf-8') as f:  
+                    f.write("\nRESULT\n")
+                    f.write(result)
+            except Exception:
+                pass  # Silently ignore logging errors
+        
         return result_object
