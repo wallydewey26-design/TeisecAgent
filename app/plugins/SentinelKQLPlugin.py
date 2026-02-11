@@ -142,8 +142,8 @@ class SentinelKQLPlugin(TeisecAgentPlugin):
         :return: Loaded Sentinel schema  
         """  
         print_plugin_debug(self.name, "Loading Sentinel Schema for current Workspace")
-        current_workspace_name=self.sentinelClient.workspaceName
-        schema_cache_file = current_workspace_name+'.json'
+        current_workspace_name = self.sentinelClient.workspaceName
+        schema_cache_file = current_workspace_name + '.json'
         
         # Check if cached schema exists and is recent (less than 7 days old)
         try:

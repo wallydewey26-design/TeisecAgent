@@ -381,8 +381,9 @@ class TeisecAgent:
             assistant_object = {"role": "assistant", "content": [{"type": "text", "text": str(task['response_object']['result'])}]}  
             # Maintain a sliding window of messages (system message + context_window_size pairs)
             # Each pair is a user message and an assistant message
+            # Before adding new messages, check if we need to remove old ones
             max_messages = (self.context_window_size * 2) + 1  # +1 for system message
-            if len(self.sessions[sessionId]["messages"]) >= max_messages:  
+            if len(self.sessions[sessionId]["messages"]) > max_messages - 2:  # -2 because we're about to add 2 messages
                 self.sessions[sessionId]["messages"].pop(1)  # Remove the oldest user message
                 self.sessions[sessionId]["messages"].pop(1)  # Remove the oldest assistant message
             self.sessions[sessionId]["messages"].append(user_object)  
