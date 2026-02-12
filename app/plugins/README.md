@@ -141,11 +141,20 @@ Configuration parameters:
 - `name`: Unique identifier for the plugin
 - `module`: Python module path to the plugin class
 - `class`: Name of the plugin class
-- `init_params`: Basic initialization parameters (must include name, description, plugintype in this order)
+- `init_params`: Basic initialization parameters. Must be a JSON object containing exactly these three fields:
+  - `name`: Plugin instance name (first positional argument)
+  - `description`: Plugin description (second positional argument)
+  - `plugintype`: Plugin type identifier (third positional argument)
+  
+  Note: The order is enforced by the loader, which explicitly reads these fields in sequence, not by JSON object ordering.
 - `clients`: List of required client instances (e.g., "azure_openai_client", "sentinel_client", "graph_api_client")
 - `env_params`: Optional environment variables to pass as initialization parameters. Each parameter can be:
-  - A simple string (environment variable name) for backward compatibility
-  - An object with `var` (environment variable name), `default` (default value), and `type` (data type: "string", "boolean", "int", "float")
+  - A simple string (environment variable name) - deprecated but supported for backward compatibility, defaults to boolean conversion
+  - An object with:
+    - `var`: Environment variable name
+    - `default`: Default value if environment variable is not set
+    - `type`: Data type for conversion - "string", "boolean", "int", or "float"
+      - Boolean type accepts: true/false, yes/no, on/off, 1/0 (case-insensitive)
 - `custom_capabilities`: Set to `true` if the plugin supports loading custom capabilities from the capabilities folder
 
 The plugin will be automatically discovered and loaded when the TeisecAgent starts.

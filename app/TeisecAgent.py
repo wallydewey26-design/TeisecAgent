@@ -158,20 +158,25 @@ class TeisecAgent:
                             param_type = env_config.get('type', 'string')
                             value = os.getenv(env_var, default_value)
                             
-                            if param_type == 'boolean':
-                                init_args.append(value == 'True')
-                            elif param_type == 'int':
-                                init_args.append(int(value))
-                            elif param_type == 'float':
-                                init_args.append(float(value))
-                            else:
-                                init_args.append(value)
+                            try:
+                                if param_type == 'boolean':
+                                    # Handle various truthy/falsy values
+                                    init_args.append(value.lower() in ('true', '1', 'yes', 'on'))
+                                elif param_type == 'int':
+                                    init_args.append(int(value))
+                                elif param_type == 'float':
+                                    init_args.append(float(value))
+                                else:
+                                    init_args.append(value)
+                            except (ValueError, AttributeError) as e:
+                                print_error(f"Failed to convert parameter '{param_name}' with value '{value}' to type '{param_type}': {e}")
+                                raise ValueError(f"Type conversion error for parameter '{param_name}'")
                         else:
-                            # Backward compatibility: simple string mapping to env var
-                            if param_name == 'loadSchema':
-                                init_args.append(os.getenv(env_config, 'True') == 'True')
-                            else:
-                                init_args.append(os.getenv(env_config))
+                            # Backward compatibility: simple string mapping to env var (deprecated)
+                            print_plugin_debug("PluginLoader", f"Warning: Using deprecated env_params format for '{param_name}'. Consider using structured format.")
+                            value = os.getenv(env_config, 'True')
+                            # Default to boolean conversion for backward compatibility with loadSchema
+                            init_args.append(value.lower() in ('true', '1', 'yes', 'on'))
                     
                     # Add custom capabilities if plugin supports it
                     if plugin_config.get('custom_capabilities', False):
