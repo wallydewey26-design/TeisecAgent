@@ -3,10 +3,6 @@ from azure.identity import InteractiveBrowserCredential, ClientSecretCredential,
 from app.clients.SentinelClient import SentinelClient  
 from app.clients.AzureOpenAIClient import AzureOpenAIClient  
 from app.clients.GraphAPIClient import GraphAPIClient 
-from app.plugins.GraphAPIPlugin import GraphAPIPlugin  
-from app.plugins.SentinelKQLPlugin import SentinelKQLPlugin  
-from app.plugins.GPTPlugin import GPTPlugin  
-from app.plugins.FetchURLPlugin import FetchURLPlugin  
 from colorama import Fore  
 from app.HelperFunctions import *  
 from app.Prompts import TeisecPrompts
@@ -18,6 +14,7 @@ import concurrent.futures
 from functools import partial
 import traceback
 import uuid
+import importlib
 class TeisecAgent:  
     def __init__(self, auth_type):  
         self.client_list = {}  
@@ -107,9 +104,84 @@ class TeisecAgent:
 
     def load_plugins(self):  
         """  
-        Load plugins for the assistant. Currently hardcoded, but can be extended to auto-load from the plugins folder.  
+        Auto-load plugins from the plugins folder using configuration file.  
         """  
-        # TODO: Auto-load from all plugins available inside the plugins subfolder  
+        self.plugin_list = {}
+        
+        # Load plugin configuration
+        config_path = os.path.join(os.getcwd(), 'plugins_config.json')
+        if not os.path.exists(config_path):
+            print_error(f"Plugin configuration file not found: {config_path}")
+            print_info("Falling back to manual plugin loading")
+            self._load_plugins_manual()
+            return
+        
+        try:
+            with open(config_path, 'r', encoding='utf-8') as f:
+                config = json.load(f)
+            
+            custom_capabilities = self.load_capabilities()
+            
+            for plugin_config in config.get('plugins', []):
+                try:
+                    plugin_name = plugin_config['name']
+                    print_plugin_debug("PluginLoader", f"Loading plugin: {plugin_name}")
+                    
+                    # Dynamically import the plugin module
+                    module = importlib.import_module(plugin_config['module'])
+                    plugin_class = getattr(module, plugin_config['class'])
+                    
+                    # Prepare initialization arguments
+                    init_args = []
+                    init_kwargs = {}
+                    
+                    # Add basic init parameters
+                    for key, value in plugin_config['init_params'].items():
+                        init_args.append(value)
+                    
+                    # Add required clients
+                    for client_name in plugin_config.get('clients', []):
+                        if client_name in self.client_list:
+                            init_args.append(self.client_list[client_name])
+                        else:
+                            print_error(f"Required client '{client_name}' not found for plugin '{plugin_name}'")
+                            raise ValueError(f"Missing client: {client_name}")
+                    
+                    # Add environment-based parameters
+                    env_params = plugin_config.get('env_params', {})
+                    for param_name, env_var in env_params.items():
+                        if param_name == 'loadSchema':
+                            init_args.append(os.getenv(env_var, 'True') == 'True')
+                        else:
+                            init_args.append(os.getenv(env_var))
+                    
+                    # Add custom capabilities if plugin supports it
+                    if plugin_config.get('custom_capabilities', False):
+                        init_args.append(custom_capabilities.get(plugin_name, []))
+                    
+                    # Instantiate the plugin
+                    plugin_instance = plugin_class(*init_args, **init_kwargs)
+                    self.plugin_list[plugin_name] = plugin_instance
+                    print_plugin_debug("PluginLoader", f"Successfully loaded plugin: {plugin_name}")
+                    
+                except Exception as e:
+                    print_error(f"Failed to load plugin '{plugin_config.get('name', 'unknown')}': {e}")
+                    print_error(f"Stacktrace: {traceback.format_exc()}")
+                    
+        except Exception as e:
+            print_error(f"Error loading plugin configuration: {e}")
+            print_info("Falling back to manual plugin loading")
+            self._load_plugins_manual()
+    
+    def _load_plugins_manual(self):
+        """
+        Manual plugin loading as fallback (original hardcoded implementation).
+        """
+        from app.plugins.GraphAPIPlugin import GraphAPIPlugin  
+        from app.plugins.SentinelKQLPlugin import SentinelKQLPlugin  
+        from app.plugins.GPTPlugin import GPTPlugin  
+        from app.plugins.FetchURLPlugin import FetchURLPlugin
+        
         loadSchema=(os.getenv('SENTINELKQL_LOADSCHEMA', 'True')=='True' )
         custom_capabilities = self.load_capabilities()
         self.plugin_list = {  

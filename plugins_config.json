@@ -1,0 +1,52 @@
+{
+  "plugins": [
+    {
+      "name": "GraphAPIPlugin",
+      "module": "app.plugins.GraphAPIPlugin",
+      "class": "GraphAPIPlugin",
+      "init_params": {
+        "name": "GraphAPIPlugin",
+        "description": "Plugin to retrieve data from the Microsoft GraphAPI",
+        "plugintype": "API"
+      },
+      "clients": ["graph_api_client"]
+    },
+    {
+      "name": "SentinelKQLPlugin",
+      "module": "app.plugins.SentinelKQLPlugin",
+      "class": "SentinelKQLPlugin",
+      "init_params": {
+        "name": "SentinelKQLPlugin",
+        "description": "Plugin to generate and run KQL queries in Sentinel",
+        "plugintype": "API"
+      },
+      "clients": ["azure_openai_client", "sentinel_client"],
+      "env_params": {
+        "loadSchema": "SENTINELKQL_LOADSCHEMA"
+      },
+      "custom_capabilities": true
+    },
+    {
+      "name": "FetchURLPlugin",
+      "module": "app.plugins.FetchURLPlugin",
+      "class": "FetchURLPlugin",
+      "init_params": {
+        "name": "FetchURLPlugin",
+        "description": "Plugin to fetch HTML sites",
+        "plugintype": "API"
+      },
+      "clients": ["azure_openai_client"]
+    },
+    {
+      "name": "GPTPlugin",
+      "module": "app.plugins.GPTPlugin",
+      "class": "GPTPlugin",
+      "init_params": {
+        "name": "GPTPlugin",
+        "description": "Plugin to run prompts in Azure OpenAI GPT models",
+        "plugintype": "GPT"
+      },
+      "clients": ["azure_openai_client"]
+    }
+  ]
+}
