@@ -161,7 +161,9 @@ class TeisecAgent:
                             try:
                                 if param_type == 'boolean':
                                     # Handle various truthy/falsy values
-                                    init_args.append(value.lower() in ('true', '1', 'yes', 'on'))
+                                    # Ensure value is a string before calling .lower()
+                                    str_value = str(value) if value is not None else 'false'
+                                    init_args.append(str_value.lower() in ('true', '1', 'yes', 'on'))
                                 elif param_type == 'int':
                                     init_args.append(int(value))
                                 elif param_type == 'float':
@@ -176,7 +178,9 @@ class TeisecAgent:
                             print_plugin_debug("PluginLoader", f"Warning: Using deprecated env_params format for '{param_name}'. Consider using structured format.")
                             value = os.getenv(env_config, 'True')
                             # Default to boolean conversion for backward compatibility with loadSchema
-                            init_args.append(value.lower() in ('true', '1', 'yes', 'on'))
+                            # Ensure value is a string before calling .lower()
+                            str_value = str(value) if value is not None else 'false'
+                            init_args.append(str_value.lower() in ('true', '1', 'yes', 'on'))
                     
                     # Add custom capabilities if plugin supports it
                     if plugin_config.get('custom_capabilities', False):
