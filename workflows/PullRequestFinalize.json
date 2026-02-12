@@ -1,0 +1,32 @@
+{
+    "workflow": {
+        "title": "Pull Request Finalization Workflow",
+        "shortcut": "prfinalize",
+        "input_parameters": [
+            {
+                "name": "pr_title",
+                "description": "The title of the pull request."
+            },
+            {
+                "name": "changes_summary",
+                "description": "A short summary of the key changes in the pull request."
+            },
+            {
+                "name": "test_results",
+                "description": "The tests or checks that were run and their outcomes."
+            },
+            {
+                "name": "open_questions",
+                "description": "Any open questions, risks, or review notes to highlight (optional)."
+            }
+        ],
+        "tasks": [
+            {
+                "title": "Generate Final Review Summary",
+                "plugin_name": "GPTPlugin",
+                "capability_name": "runprompt",
+                "prompt_text": "Create a concise pull request finalization summary for reviewer approval. Use the PR title '{{pr_title}}', changes summary '{{changes_summary}}', and test results '{{test_results}}'. If '{{open_questions}}' contains notes, call them out as risks or follow-ups. Provide a short summary, a bullet list of verification points, and an approval recommendation."
+            }
+        ]
+    }
+}
