@@ -102,6 +102,16 @@ class TeisecAgent:
                         custom_capabilities[plugin_name].append(capability)
         return custom_capabilities
 
+    def _parse_boolean(self, value):
+        """
+        Parse a value to boolean, supporting common truthy/falsy representations.
+        
+        :param value: Value to convert (can be string, boolean, or None)
+        :return: Boolean value
+        """
+        str_value = str(value) if value is not None else 'false'
+        return str_value.lower() in ('true', '1', 'yes', 'on')
+    
     def load_plugins(self):  
         """  
         Auto-load plugins from the plugins folder using configuration file.  
@@ -161,9 +171,7 @@ class TeisecAgent:
                             try:
                                 if param_type == 'boolean':
                                     # Handle various truthy/falsy values
-                                    # Ensure value is a string before calling .lower()
-                                    str_value = str(value) if value is not None else 'false'
-                                    init_args.append(str_value.lower() in ('true', '1', 'yes', 'on'))
+                                    init_args.append(self._parse_boolean(value))
                                 elif param_type == 'int':
                                     init_args.append(int(value))
                                 elif param_type == 'float':
@@ -175,12 +183,10 @@ class TeisecAgent:
                                 raise ValueError(f"Type conversion error for parameter '{param_name}'")
                         else:
                             # Backward compatibility: simple string mapping to env var (deprecated)
+                            # This format will be maintained for backward compatibility but new plugins should use structured format
                             print_plugin_debug("PluginLoader", f"Warning: Using deprecated env_params format for '{param_name}'. Consider using structured format.")
                             value = os.getenv(env_config, 'True')
-                            # Default to boolean conversion for backward compatibility with loadSchema
-                            # Ensure value is a string before calling .lower()
-                            str_value = str(value) if value is not None else 'false'
-                            init_args.append(str_value.lower() in ('true', '1', 'yes', 'on'))
+                            init_args.append(self._parse_boolean(value))
                     
                     # Add custom capabilities if plugin supports it
                     if plugin_config.get('custom_capabilities', False):

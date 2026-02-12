@@ -146,10 +146,10 @@ Configuration parameters:
   - `description`: Plugin description (second positional argument)
   - `plugintype`: Plugin type identifier (third positional argument)
   
-  Note: The loader accesses these fields by their specific keys (`name`, `description`, `plugintype`) in this defined sequence, regardless of the order they appear in the JSON object. JSON object ordering does not affect initialization.
+  Note: The loader retrieves these fields by their key names in the defined order (name, description, plugintype), so the order in which these keys appear in the JSON object is not significant.
 - `clients`: List of required client instances (e.g., "azure_openai_client", "sentinel_client", "graph_api_client")
 - `env_params`: Optional environment variables to pass as initialization parameters. Each parameter can be:
-  - A simple string (environment variable name) - deprecated but supported for backward compatibility, defaults to boolean conversion
+  - A simple string (environment variable name) - **deprecated format maintained for backward compatibility**, defaults to boolean conversion. New plugins should use the structured format below.
   - An object with:
     - `var`: Environment variable name
     - `default`: Default value if environment variable is not set
