@@ -124,7 +124,13 @@ Example entry for `plugins_config.json`:
         "plugintype": "API"
       },
       "clients": ["azure_openai_client"],
-      "env_params": {},
+      "env_params": {
+        "maxRetries": {
+          "var": "MY_PLUGIN_MAX_RETRIES",
+          "default": "3",
+          "type": "int"
+        }
+      },
       "custom_capabilities": false
     }
   ]
@@ -135,9 +141,11 @@ Configuration parameters:
 - `name`: Unique identifier for the plugin
 - `module`: Python module path to the plugin class
 - `class`: Name of the plugin class
-- `init_params`: Basic initialization parameters (name, description, plugintype)
+- `init_params`: Basic initialization parameters (must include name, description, plugintype in this order)
 - `clients`: List of required client instances (e.g., "azure_openai_client", "sentinel_client", "graph_api_client")
-- `env_params`: Optional environment variables to pass as initialization parameters
+- `env_params`: Optional environment variables to pass as initialization parameters. Each parameter can be:
+  - A simple string (environment variable name) for backward compatibility
+  - An object with `var` (environment variable name), `default` (default value), and `type` (data type: "string", "boolean", "int", "float")
 - `custom_capabilities`: Set to `true` if the plugin supports loading custom capabilities from the capabilities folder
 
 The plugin will be automatically discovered and loaded when the TeisecAgent starts.

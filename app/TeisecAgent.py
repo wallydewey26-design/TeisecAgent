@@ -133,11 +133,12 @@ class TeisecAgent:
                     
                     # Prepare initialization arguments
                     init_args = []
-                    init_kwargs = {}
                     
-                    # Add basic init parameters
-                    for key, value in plugin_config['init_params'].items():
-                        init_args.append(value)
+                    # Add basic init parameters in the order specified
+                    init_params = plugin_config['init_params']
+                    init_args.append(init_params['name'])
+                    init_args.append(init_params['description'])
+                    init_args.append(init_params['plugintype'])
                     
                     # Add required clients
                     for client_name in plugin_config.get('clients', []):
@@ -149,18 +150,35 @@ class TeisecAgent:
                     
                     # Add environment-based parameters
                     env_params = plugin_config.get('env_params', {})
-                    for param_name, env_var in env_params.items():
-                        if param_name == 'loadSchema':
-                            init_args.append(os.getenv(env_var, 'True') == 'True')
+                    for param_name, env_config in env_params.items():
+                        if isinstance(env_config, dict):
+                            # Support type conversion based on config
+                            env_var = env_config.get('var')
+                            default_value = env_config.get('default', 'True')
+                            param_type = env_config.get('type', 'string')
+                            value = os.getenv(env_var, default_value)
+                            
+                            if param_type == 'boolean':
+                                init_args.append(value == 'True')
+                            elif param_type == 'int':
+                                init_args.append(int(value))
+                            elif param_type == 'float':
+                                init_args.append(float(value))
+                            else:
+                                init_args.append(value)
                         else:
-                            init_args.append(os.getenv(env_var))
+                            # Backward compatibility: simple string mapping to env var
+                            if param_name == 'loadSchema':
+                                init_args.append(os.getenv(env_config, 'True') == 'True')
+                            else:
+                                init_args.append(os.getenv(env_config))
                     
                     # Add custom capabilities if plugin supports it
                     if plugin_config.get('custom_capabilities', False):
                         init_args.append(custom_capabilities.get(plugin_name, []))
                     
                     # Instantiate the plugin
-                    plugin_instance = plugin_class(*init_args, **init_kwargs)
+                    plugin_instance = plugin_class(*init_args)
                     self.plugin_list[plugin_name] = plugin_instance
                     print_plugin_debug("PluginLoader", f"Successfully loaded plugin: {plugin_name}")
                     

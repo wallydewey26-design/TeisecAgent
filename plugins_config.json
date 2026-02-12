@@ -22,7 +22,11 @@
       },
       "clients": ["azure_openai_client", "sentinel_client"],
       "env_params": {
-        "loadSchema": "SENTINELKQL_LOADSCHEMA"
+        "loadSchema": {
+          "var": "SENTINELKQL_LOADSCHEMA",
+          "default": "True",
+          "type": "boolean"
+        }
       },
       "custom_capabilities": true
     },
