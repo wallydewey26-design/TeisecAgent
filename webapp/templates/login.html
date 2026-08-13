@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teisec - Login</title>
+    <meta name="description" content="Teisec - CyberSec Agent Login">
+    <link rel="apple-touch-icon" sizes="180x180" href="../static/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../static/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../static/favicon-16x16.png">
+    <link rel="manifest" href="../static/site.webmanifest">
+    <link rel="stylesheet" href="../static/styles.css">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+</head>
+<body class="bg-gray-50 min-h-screen flex items-center justify-center">
+    <div class="w-full max-w-md px-6">
+        <div class="bg-white shadow-xl ring-1 ring-gray-900/5 rounded-lg px-10 py-10">
+            <!-- Logo -->
+            <div class="flex justify-center mb-8">
+                <svg width="220" height="35" xmlns="http://www.w3.org/2000/svg" xml:space="preserve">
+                    <g>
+                     <g stroke="null">
+                      <g stroke="null" transform="translate(10 1.32) scale(0.97436 0.97436)">
+                       <path stroke="null" d="m28.42949,4.4695l0,10.2782q-6.07401,-0.24741 -11.79948,-0.29581l0,25.54759l-9.66996,0l0,-25.54759q-5.75947,0.04841 -11.75697,0.29581l0,-10.2782l33.2264,0zm12.22028,21.48149l0,5.09338q14.69834,-0.09681 21.31642,-0.53784q-0.27203,2.00616 -0.33154,4.13602q-0.05526,2.12986 -0.05526,5.35693l-30.05551,0q0.31029,-9.49295 0.31029,-17.76499t-0.31029,-17.76499l30.05551,0l0,8.85829l-20.92962,0l0,4.69538q1.85748,0.04841 5.49594,0.04841q6.15052,0 12.72609,-0.29044l0,8.41726q-6.57557,-0.29581 -12.72609,-0.29581q-3.63845,0 -5.49594,0.04841m46.87911,-21.48149l0,9.73498q-4.60333,-0.29044 -6.80935,-0.33884l0,16.73771q2.24428,-0.04841 6.80935,-0.34422l0,9.74036l-22.47256,0l0,-9.74036q4.44606,0.29581 6.76685,0.34422l0,-16.73771q-2.32079,0.04841 -6.76685,0.33884l0,-9.73498l22.47256,0zm3.09864,31.31866q1.31341,-2.50097 2.18477,-4.65235t1.68321,-4.99119q2.74584,2.00616 6.38005,3.13025q3.63845,1.12947 6.7711,1.12947q3.20915,0 4.52257,-0.70995q1.31766,-0.70995 1.31766,-1.54361q0,-2.98503 -7.19615,-2.98503q-7.88899,0 -11.44668,-2.08146q-3.56195,-2.08146 -3.56195,-6.72843q0,-6.6101 4.33554,-9.74036q4.33129,-3.13025 11.25541,-3.13025q4.021,0 8.25878,1.2962q4.23353,1.2962 7.6382,3.54439q-1.12214,3.23244 -2.35904,7.88479q-0.23378,0.97888 -0.3868,1.46831q-1.97225,-2.01154 -5.95925,-3.35615q-3.98275,-1.34461 -7.03888,-1.34461q-3.67246,0 -4.95187,0.61314q-1.27516,0.60776 -1.27516,1.78564q0,1.1725 1.75972,1.88245t5.08789,0.70995q8.19928,0 11.91424,2.37727q3.71071,2.37189 3.71071,7.26627q0,6.85213 -3.94449,9.86406q-3.94449,3.00655 -11.95249,3.00655q-4.29304,0 -8.74334,-1.19939q-4.44606,-1.19939 -8.00375,-3.49599m44.86861,-9.83717l0,5.09338q14.69834,-0.09681 21.31216,-0.53784q-0.27203,2.00616 -0.33154,4.13602q-0.05526,2.12986 -0.05526,5.35693l-30.05551,0q0.31029,-9.49295 0.31029,-17.76499t-0.31029,-17.76499l30.05551,0l0,8.85829l-20.92537,0l0,4.69538q1.85323,0.04841 5.49169,0.04841q6.15052,0 12.72609,-0.29044l0,8.41726q-6.57557,-0.29581 -12.72609,-0.29581q-3.63845,0 -5.49169,0.04841m41.42568,14.53255q-8.74334,0 -12.87911,-4.69538q-4.14002,-4.70076 -4.14002,-13.41383q0,-8.76148 4.14002,-13.84948q4.13577,-5.09338 12.87911,-5.09338q12.22028,0 16.3603,10.62242q-3.48119,1.51672 -8.16102,4.55016q-1.12214,-2.73763 -3.54069,-4.06072q-2.4143,-1.3231 -4.93062,-1.3231q-3.71071,0 -5.52994,2.47408t-1.81923,6.09377q0,3.9155 1.95524,6.38959q1.95099,2.4687 5.97625,2.4687q3.20915,0 5.10489,-1.34461t2.7841,-4.28124q3.1709,2.15138 8.12277,4.8406q-1.93399,5.92704 -6.46081,8.27204q-4.52257,2.35038 -9.86123,2.35038m61.61145,-0.48406l-10.0185,0q-0.73534,-2.79141 -1.97225,-6.99735l-12.33929,0l-1.93399,6.99735l-9.70821,0l10.83035,-35.52998l14.23503,0l10.90686,35.52998zm-22.12402,-14.63474l7.92724,0q-1.46643,-5.13641 -3.01363,-10.2782l-0.93087,-3.17866q-1.35167,4.45335 -3.98275,13.45686m46.64533,-20.89524l0,9.73498q-4.59907,-0.29044 -6.8051,-0.33884l0,16.73771q2.24428,-0.04841 6.8051,-0.34422l0,9.74036l-22.47256,0l0,-9.74036q4.45031,0.29581 6.7711,0.34422l0,-16.73771q-2.32079,0.04841 -6.7711,0.33884l0,-9.73498l22.47256,0z" fill="#7819cb"/>
+                      </g>
+                     </g>
+                    </g>
+                </svg>
+            </div>
+
+            <h2 class="text-center text-xl font-semibold text-gray-800 mb-1">Access Required</h2>
+            <p class="text-center text-sm text-gray-500 mb-6">Enter your role passkey to continue</p>
+
+            {% if error %}
+            <div class="bg-red-50 border border-red-300 text-red-700 text-sm rounded-md px-4 py-3 mb-5">
+                {{ error }}
+            </div>
+            {% endif %}
+
+            <form method="POST" action="{{ url_for('main.login') }}">
+                <input type="hidden" name="next" value="{{ next }}">
+                <div class="mb-5">
+                    <label for="passkey" class="block text-sm font-medium text-gray-700 mb-1">Passkey</label>
+                    <input
+                        type="password"
+                        name="passkey"
+                        id="passkey"
+                        autocomplete="current-password"
+                        required
+                        class="block w-full rounded-md border-0 py-2 pl-4 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"
+                        placeholder="Enter your passkey…"
+                    >
+                </div>
+                <button
+                    type="submit"
+                    class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-md py-2 text-sm transition-colors"
+                >
+                    Sign In
+                </button>
+            </form>
+
+            <p class="text-center text-xs text-gray-400 mt-6">
+                Passkeys are printed to the server console on startup.<br>
+                Contact your administrator if you need access.
+            </p>
+        </div>
+
+        <!-- Role legend -->
+        <div class="mt-6 bg-white shadow ring-1 ring-gray-900/5 rounded-lg px-6 py-4">
+            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Role Access Levels</p>
+            <div class="space-y-2 text-sm">
+                <div class="flex items-center gap-2">
+                    <span class="inline-block w-2.5 h-2.5 rounded-full bg-red-500"></span>
+                    <span class="font-medium text-gray-700">Owner</span>
+                    <span class="text-gray-400 text-xs">— Full access including user management</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="inline-block w-2.5 h-2.5 rounded-full bg-yellow-500"></span>
+                    <span class="font-medium text-gray-700">Admin</span>
+                    <span class="text-gray-400 text-xs">— Prompt, session management</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="inline-block w-2.5 h-2.5 rounded-full bg-green-500"></span>
+                    <span class="font-medium text-gray-700">Developer</span>
+                    <span class="text-gray-400 text-xs">— View and prompt access</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
