@@ -7,7 +7,10 @@ def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if 'role' not in session:
-            return redirect(url_for('main.login', next=request.url))
+            # Store the intended destination server-side so the login route
+            # never has to trust user-supplied redirect values.
+            session['login_next'] = request.path
+            return redirect(url_for('main.login'))
         return f(*args, **kwargs)
     return decorated_function
 
@@ -18,7 +21,8 @@ def permission_required(permission):
         @wraps(f)
         def decorated_function(*args, **kwargs):
             if 'role' not in session:
-                return redirect(url_for('main.login', next=request.url))
+                session['login_next'] = request.path
+                return redirect(url_for('main.login'))
             from .credentials import get_permissions
             if permission not in get_permissions(session['role']):
                 return ('Forbidden: your role does not have permission to access this resource.', 403)

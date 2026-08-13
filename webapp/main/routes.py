@@ -4,6 +4,7 @@ from .. import teisecAgent
 from ..auth.credentials import validate_passkey, get_permissions
 from ..auth.decorators import login_required
 
+
 @main.route('/login', methods=['GET', 'POST'])
 def login():
     error = None
@@ -13,10 +14,11 @@ def login():
         if role:
             session['role'] = role
             session['permissions'] = get_permissions(role)
-            next_url = request.form.get('next') or url_for('main.index')
-            return redirect(next_url)
+            # next destination was stored server-side by login_required; never from user input
+            next_path = session.pop('login_next', None) or url_for('main.index')
+            return redirect(next_path)
         error = 'Invalid passkey. Please try again.'
-    return render_template('login.html', error=error, next=request.args.get('next', ''))
+    return render_template('login.html', error=error)
 
 @main.route('/logout')
 def logout():

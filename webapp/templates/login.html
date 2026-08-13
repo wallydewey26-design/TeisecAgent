@@ -37,15 +37,32 @@
             </div>
             {% endif %}
 
-            <form method="POST" action="{{ url_for('main.login') }}">
-                <input type="hidden" name="next" value="{{ next }}">
+            <form method="POST" action="{{ url_for('main.login') }}" autocomplete="on">
+                <!-- Hidden username field lets password managers key credentials to an account name -->
+                <div class="mb-4">
+                    <label for="username" class="block text-sm font-medium text-gray-700 mb-1">Role</label>
+                    <input
+                        type="text"
+                        name="username"
+                        id="username"
+                        autocomplete="username"
+                        list="role-hints"
+                        class="block w-full rounded-md border-0 py-2 pl-4 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"
+                        placeholder="owner / admin / developer"
+                    >
+                    <datalist id="role-hints">
+                        <option value="owner">
+                        <option value="admin">
+                        <option value="developer">
+                    </datalist>
+                </div>
                 <div class="mb-5">
                     <label for="passkey" class="block text-sm font-medium text-gray-700 mb-1">Passkey</label>
                     <input
                         type="password"
                         name="passkey"
                         id="passkey"
-                        autocomplete="current-password"
+                        autocomplete="current-password webauthn"
                         required
                         class="block w-full rounded-md border-0 py-2 pl-4 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"
                         placeholder="Enter your passkey…"
