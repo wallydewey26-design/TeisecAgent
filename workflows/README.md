@@ -119,6 +119,18 @@ The system will provide updates on the progress of each step in the workflow, an
    - **Capability:** runprompt
    - **Description:** Generate a detailed report of the findings from the user investigation.
 
+### Pull Request Finalization Workflow
+
+**Shortcut:** `/prfinalize`
+
+**Description:** Generate a concise pull request final review summary, verification checklist, and approval recommendation for reviewers.
+
+**Input Parameters:**
+- `pr_title`: The title of the pull request.
+- `changes_summary`: A short summary of the key changes in the pull request.
+- `test_results`: The tests or checks that were run and their outcomes.
+- `open_questions`: Any open questions, risks, or review notes to highlight (optional).
+
 ## How to Create Custom Workflows
 
 You can create custom workflows by defining new JSON files in the `workflows` folder. Each workflow should include the following sections:
