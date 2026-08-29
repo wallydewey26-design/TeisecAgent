@@ -3,7 +3,22 @@
 ## Overview  
   
 This Teisec Agent is designed with a plugin-based architecture, allowing it to extend its functionality through various plugins. Each plugin focuses on a specific task and can be easily added or modified. This document provides an overview of the existing plugins and guidelines for creating new ones.  
-  
+
+## Plugin Auto-Loading
+
+The Teisec Agent now features automatic plugin discovery and loading. Plugins are configured in the `plugins_config.json` file located in the project root directory. When the agent starts, it:
+
+1. Reads the plugin configuration file
+2. Dynamically imports each plugin module
+3. Instantiates plugins with their required dependencies (clients, environment variables, custom capabilities)
+4. Registers them for use by the agent
+
+This approach eliminates the need to manually modify the `TeisecAgent.py` file when adding new plugins. Simply create your plugin class and add its configuration to `plugins_config.json`.
+
+### Fallback Mechanism
+
+If the configuration file is missing or there are errors during auto-loading, the system automatically falls back to the original manual plugin loading to ensure the application continues to function.
+
 ## Existing Plugins  
   
 ### TeisecAgentPlugin  
@@ -93,6 +108,55 @@ class MyCustomPlugin(TeisecAgentPlugin):
     def pluginhelp(self):  
         return "Use 'custom' in your prompt to trigger this plugin."  
 ```        
-6. **Register the Plugin**: Ensure your plugin is registered in the main application to be utilized.  
+6. **Register the Plugin**: Add your plugin to the `plugins_config.json` file in the project root directory. The configuration file uses a JSON format to define plugin metadata and dependencies.
+
+Example entry for `plugins_config.json`:
+```json
+{
+  "plugins": [
+    {
+      "name": "MyCustomPlugin",
+      "module": "app.plugins.MyCustomPlugin",
+      "class": "MyCustomPlugin",
+      "init_params": {
+        "name": "MyCustomPlugin",
+        "description": "My custom plugin description",
+        "plugintype": "API"
+      },
+      "clients": ["azure_openai_client"],
+      "env_params": {
+        "maxRetries": {
+          "var": "MY_PLUGIN_MAX_RETRIES",
+          "default": "3",
+          "type": "int"
+        }
+      },
+      "custom_capabilities": false
+    }
+  ]
+}
+```
+
+Configuration parameters:
+- `name`: Unique identifier for the plugin
+- `module`: Python module path to the plugin class
+- `class`: Name of the plugin class
+- `init_params`: Basic initialization parameters. Must be a JSON object containing exactly these three fields:
+  - `name`: Plugin instance name (first positional argument)
+  - `description`: Plugin description (second positional argument)
+  - `plugintype`: Plugin type identifier (third positional argument)
+  
+  Note: The loader retrieves these fields by their key names in the defined order (name, description, plugintype), so the order in which these keys appear in the JSON object is not significant.
+- `clients`: List of required client instances (e.g., "azure_openai_client", "sentinel_client", "graph_api_client")
+- `env_params`: Optional environment variables to pass as initialization parameters. Each parameter can be:
+  - A simple string (environment variable name) - **deprecated format maintained for backward compatibility**, defaults to boolean conversion. New plugins should use the structured format below.
+  - An object with:
+    - `var`: Environment variable name
+    - `default`: Default value if environment variable is not set
+    - `type`: Data type for conversion - "string", "boolean", "int", or "float"
+      - Boolean type accepts: true/false, yes/no, on/off, 1/0 (case-insensitive)
+- `custom_capabilities`: Set to `true` if the plugin supports loading custom capabilities from the capabilities folder
+
+The plugin will be automatically discovered and loaded when the TeisecAgent starts.
    
 By following these steps, you can easily extend the functionality of the Teisec Agent by adding new plugins tailored to specific tasks.
